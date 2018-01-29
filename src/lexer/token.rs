@@ -1,0 +1,33 @@
+enum Token {
+    AAxis(TokenValue),
+    BAxis(TokenValue),
+    CAxis(TokenValue),
+    ToolRadisuCompensationNumber(TokenValue),
+    FeedRate(TokenValue),
+    GeneralFunction(TokenValue),
+    ToolLengthOffsetIndex(TokenValue),
+    XOffset(TokenValue),
+    YOffset(TokenValue),
+    ZOffset(TokenValue),
+    GenericParameter(TokenValue),
+    MiscellaneousFunction(TokenValue),
+    LineNumber(TokenValue),
+    DwellTime(TokenValue),
+    FeedIncrement(TokenValue),
+    ArcRadius(TokenValue),
+    SpindleSpeed(TokenValue),
+    ToolSelection(TokenValue),
+    UAxis(TokenValue),
+    VAxis(TokenValue),
+    WAxis(TokenValue),
+    XAxis(TokenValue),
+    YAxis(TokenValue),
+    ZAxis(TokenValue),
+    Value(TokenValue),
+}
+
+enum TokenValue {
+    Integer(u64),
+    Float(f64),
+    Empty,
+}
