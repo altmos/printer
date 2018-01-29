@@ -6,8 +6,8 @@ const BUF_SIZE: usize = 1024 * 4;
 
 pub struct BufRead<Read> {
     buf: [u8; BUF_SIZE],
-    pos: usize,
-    size: usize,
+    buf_pos: usize,
+    buf_size: usize,
     source: Read,
     row: u32,
     col: u16,
@@ -19,8 +19,8 @@ impl<R: Read> From<R> for BufRead<R> {
     fn from(read: R) -> Self {
         Self {
             buf: [0; BUF_SIZE],
-            pos: BUF_SIZE,
-            size: BUF_SIZE,
+            buf_pos: BUF_SIZE,
+            buf_size: BUF_SIZE,
             source: read,
             row: 1,
             col: 0,
@@ -35,47 +35,47 @@ impl<R: Read> Iterator for BufRead<R> {
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
-            if self.pos >= self.size {
-                self.pos = 0;
+            if self.buf_pos >= self.buf_size {
+                self.buf_pos = 0;
 
-                self.size = match self.source.read(&mut self.buf) {
+                self.buf_size = match self.source.read(&mut self.buf) {
                     Ok(0) => return None,
-                    Ok(size) => size,
+                    Ok(buf_size) => buf_size,
                     Err(e) => return Some(Err(e))
                 };
             }
 
-            match self.buf[self.pos] {
+            match self.buf[self.buf_pos] {
                 ascii::LINEFEED => {
-                    self.pos += 1;
+                    self.buf_pos += 1;
                     self.row += 1;
                     self.col = 0;
 
                     self.single_comment = false;
                 }
                 ascii::CARRIAGE_RETURN => {
-                    self.pos += 1;
+                    self.buf_pos += 1;
                     self.col = 0;
                 }
                 ascii::LEFT_PARENTHESIS if !self.single_comment && !self.multi_comment => {
-                    self.pos += 1;
+                    self.buf_pos += 1;
                     self.col += 1;
 
                     self.multi_comment = true;
                 }
                 ascii::RIGHT_PARENTHESIS if self.multi_comment => {
-                    self.pos += 1;
+                    self.buf_pos += 1;
                     self.col += 1;
 
                     self.multi_comment = false;
                 }
                 ascii::SEMICOLON if !self.single_comment && !self.multi_comment => {
-                    self.pos += 1;
+                    self.buf_pos += 1;
 
                     self.single_comment = true;
                 }
                 code => {
-                    self.pos += 1;
+                    self.buf_pos += 1;
                     self.col += 1;
 
                     if code != ascii::SPACE && !self.single_comment && !self.multi_comment {
