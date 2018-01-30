@@ -1,6 +1,5 @@
-use super::{Char, Error};
-use crate::ascii;
-use std::io::{Read, ErrorKind as IOErrorKind};
+use super::Error;
+use std::io::Read;
 
 const BUF_SIZE: usize = 1024 * 4;
 
@@ -9,10 +8,6 @@ pub struct BufRead<Read> {
     buf_pos: usize,
     buf_size: usize,
     source: Read,
-    row: u32,
-    col: u16,
-    single_comment: bool,
-    multi_comment: bool,
 }
 
 impl<R: Read> From<R> for BufRead<R> {
@@ -22,16 +17,12 @@ impl<R: Read> From<R> for BufRead<R> {
             buf_pos: BUF_SIZE,
             buf_size: BUF_SIZE,
             source: read,
-            row: 1,
-            col: 0,
-            single_comment: false,
-            multi_comment: false,
         }
     }
 }
 
 impl<R: Read> Iterator for BufRead<R> {
-    type Item = Result<Char, Error>;
+    type Item = Result<u8, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -44,49 +35,11 @@ impl<R: Read> Iterator for BufRead<R> {
                     Err(e) => return Some(Err(e))
                 };
             }
+            let code = self.buf[self.buf_pos];
 
-            match self.buf[self.buf_pos] {
-                ascii::LINEFEED => {
-                    self.buf_pos += 1;
-                    self.row += 1;
-                    self.col = 0;
+            self.buf_pos += 1;
 
-                    self.single_comment = false;
-                }
-                ascii::CARRIAGE_RETURN => {
-                    self.buf_pos += 1;
-                    self.col = 0;
-                }
-                ascii::LEFT_PARENTHESIS if !self.single_comment && !self.multi_comment => {
-                    self.buf_pos += 1;
-                    self.col += 1;
-
-                    self.multi_comment = true;
-                }
-                ascii::RIGHT_PARENTHESIS if self.multi_comment => {
-                    self.buf_pos += 1;
-                    self.col += 1;
-
-                    self.multi_comment = false;
-                }
-                ascii::SEMICOLON if !self.single_comment && !self.multi_comment => {
-                    self.buf_pos += 1;
-
-                    self.single_comment = true;
-                }
-                code => {
-                    self.buf_pos += 1;
-                    self.col += 1;
-
-                    if code != ascii::SPACE && !self.single_comment && !self.multi_comment {
-                        return Some(Ok(Char {
-                            code: code,
-                            row: self.row,
-                            col: self.col,
-                        }))
-                    }
-                }
-            };
+            break Some(Ok(code));
         }
     }
 }

@@ -1,16 +1,12 @@
 mod buf_read;
+mod char;
 
 use std::io::{Read, Error as IOError};
 
+pub use self::char::Char;
+
 pub type Error = IOError;
 
-#[derive(Debug)]
-pub struct Char {
-    pub code: u8,
-    pub row: u32,
-    pub col: u16,
-}
-
 pub fn buf_read<R: Read>(r: R) -> impl Iterator<Item=Result<Char, Error>> {
-    buf_read::BufRead::from(r)
+    char::Chars::from(buf_read::BufRead::from(r))
 }
