@@ -3,16 +3,20 @@
 
 use std::fs::File;
 
-mod ascii;
+mod error;
 mod io;
+mod lexer;
 
 fn main() {
     let f = File::open(std::env::args().nth(1).unwrap()).unwrap();
 
     let foo = io::buf_read(f);
 
+    let foo = lexer::tokenize(foo);
+
     let mut count = 0;
-    for i in foo {
+    for _ in foo {
+        //println!("{:?}", i);
         count += 1;
     }
 

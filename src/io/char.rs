@@ -1,5 +1,4 @@
-use super::Error;
-use crate::ascii;
+use crate::error::Error;
 
 #[derive(Debug)]
 pub struct Char {
@@ -34,33 +33,33 @@ impl<I: Iterator<Item=Result<u8, Error>>> Iterator for Chars<I> {
     fn next(&mut self) -> Option<Self::Item> {
         loop {
             match self.source.next() {
-                Some(Ok(ascii::LINEFEED)) => {
+                Some(Ok(b'\n')) => {
                     self.row += 1;
                     self.col = 0;
 
                     self.single_comment = false;
                 }
-                Some(Ok(ascii::CARRIAGE_RETURN)) => {
+                Some(Ok(b'\r')) => {
                     self.col = 0;
                 }
-                Some(Ok(ascii::LEFT_PARENTHESIS)) if !self.single_comment && !self.multi_comment => {
+                Some(Ok(b'(')) if !self.single_comment && !self.multi_comment => {
                     self.col += 1;
 
                     self.multi_comment = true;
                 }
-                Some(Ok(ascii::RIGHT_PARENTHESIS)) if self.multi_comment => {
+                Some(Ok(b')')) if self.multi_comment => {
                     self.col += 1;
 
                     self.multi_comment = false;
                 }
-                Some(Ok(ascii::SEMICOLON)) if !self.single_comment && !self.multi_comment => {
+                Some(Ok(b';')) if !self.single_comment && !self.multi_comment => {
 
                     self.single_comment = true;
                 }
                 Some(Ok(code)) => {
                     self.col += 1;
 
-                    if code != ascii::SPACE && !self.single_comment && !self.multi_comment {
+                    if code != b' ' && !self.single_comment && !self.multi_comment {
                         return Some(Ok(Char {
                             code: code,
                             row: self.row,
@@ -74,4 +73,3 @@ impl<I: Iterator<Item=Result<u8, Error>>> Iterator for Chars<I> {
         }
     }
 }
-

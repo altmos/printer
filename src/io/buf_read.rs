@@ -1,4 +1,4 @@
-use super::Error;
+use crate::error::Error;
 use std::io::Read;
 
 const BUF_SIZE: usize = 1024 * 4;
@@ -16,7 +16,7 @@ impl<R: Read> From<R> for BufRead<R> {
             buf: [0; BUF_SIZE],
             buf_pos: BUF_SIZE,
             buf_size: BUF_SIZE,
-            source: read,
+            source: read
         }
     }
 }
@@ -32,7 +32,7 @@ impl<R: Read> Iterator for BufRead<R> {
                 self.buf_size = match self.source.read(&mut self.buf) {
                     Ok(0) => return None,
                     Ok(buf_size) => buf_size,
-                    Err(e) => return Some(Err(e))
+                    Err(err) => return Some(Err(Error::IO(err)))
                 };
             }
             let code = self.buf[self.buf_pos];
