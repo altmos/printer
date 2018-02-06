@@ -74,6 +74,7 @@ impl<I: Iterator<Item=Result<Char, Error>>> Tokens<I> {
     fn get_number(&mut self, first_char: &Char) -> Option<<Self as Iterator>::Item> {
         let mut number = Vec::with_capacity(16);
         let mut end = first_char.col;
+        let mut is_float = first_char.code == b'.';
 
         number.push(first_char.code);
 
@@ -83,11 +84,16 @@ impl<I: Iterator<Item=Result<Char, Error>>> Tokens<I> {
                     number.push(char.code);
                     end = char.col;
                 }
+                Some(Ok(Char { code: b'.', row: _, col })) if is_float == false => {
+                    is_float = true;
+                    number.push(b'.');
+                    end = col;
+                }
                 item => {
                     self.peeked = Some(item);
 
                     break Some(Ok(Token {
-                        kind: TokenKind::Number(number),
+                        kind: if is_float {TokenKind::Float(number)} else {TokenKind::Int(number)},
                         row: first_char.row,
                         start: first_char.col,
                         end: end

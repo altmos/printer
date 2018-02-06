@@ -34,5 +34,6 @@ pub enum TokenKind {
     X,
     Y,
     Z,
-    Number(Vec<u8>)
+    Int(Vec<u8>),
+    Float(Vec<u8>)
 }
