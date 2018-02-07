@@ -1,4 +1,4 @@
-pub const NUMBER_LENGTH: usize = 10;
+pub const NUMBER_LENGTH: usize = 16;
 
 #[derive(Debug)]
 pub struct Token {

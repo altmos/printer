@@ -15,7 +15,11 @@ fn main() {
     let foo = lexer::tokenize(foo);
 
     let mut count = 0;
-    for _ in foo {
+    for i in foo {
+        if i.is_err() {
+            println!("{:?}", i);
+            break;
+        }
         //println!("{:?}", i);
         count += 1;
     }
