@@ -3,7 +3,7 @@ mod token;
 use crate::io::Char;
 use crate::error::Error;
 
-use self::token::{Token, TokenKind};
+use self::token::{Token, TokenKind, NUMBER_LENGTH};
 
 
 pub fn tokenize<I: Iterator<Item=Result<Char, Error>>>(iter: I) -> impl Iterator<Item=Result<Token, Error>> {
@@ -54,28 +54,36 @@ impl<I: Iterator<Item=Result<Char, Error>>> Iterator for Tokens<I> {
 
 impl<I: Iterator<Item=Result<Char, Error>>> Tokens<I> {
     fn get_number(&mut self, first_char: &Char) -> Option<<Self as Iterator>::Item> {
-        let mut number = Vec::with_capacity(16);
+        let mut number = [first_char.code; NUMBER_LENGTH];
+        let mut pos = 1;
         let mut end = first_char.col;
         let mut is_float = first_char.code == b'.';
-
-        number.push(first_char.code);
 
         loop {
             match self.source.next() {
                 Some(Ok(ref char)) if (char.code >= b'0' && char.code <= b'9') => {
-                    number.push(char.code);
+                    if pos == NUMBER_LENGTH {
+                        break Some(Err(Error::NumberToLong(first_char.row, first_char.col)));
+                    }
+                    number[pos] = char.code;
+                    pos += 1;
                     end = char.col;
                 }
                 Some(Ok(Char { code: b'.', row: _, col })) if is_float == false => {
-                    is_float = true;
-                    number.push(b'.');
+                    if pos == NUMBER_LENGTH {
+                        break Some(Err(Error::NumberToLong(first_char.row, first_char.col)));
+                    }
+                    number[pos] = b'.';
+                    pos += 1;
                     end = col;
+
+                    is_float = true;
                 }
                 item => {
                     self.peeked = Some(item);
 
                     break Some(Ok(Token {
-                        kind: TokenKind::Number(number),
+                        kind: TokenKind::Number(number, pos),
                         row: first_char.row,
                         start: first_char.col,
                         end: end

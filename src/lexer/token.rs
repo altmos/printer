@@ -1,3 +1,5 @@
+pub const NUMBER_LENGTH: usize = 10;
+
 #[derive(Debug)]
 pub struct Token {
     pub kind: TokenKind,
@@ -9,5 +11,5 @@ pub struct Token {
 #[derive(Debug)]
 pub enum TokenKind {
     Code(u8),
-    Number(Vec<u8>)
+    Number([u8; NUMBER_LENGTH], usize)
 }
