@@ -9,6 +9,5 @@ pub struct Token {
 #[derive(Debug)]
 pub enum TokenKind {
     Code(u8),
-    Int(Vec<u8>),
-    Float(Vec<u8>)
+    Number(Vec<u8>)
 }

@@ -75,7 +75,7 @@ impl<I: Iterator<Item=Result<Char, Error>>> Tokens<I> {
                     self.peeked = Some(item);
 
                     break Some(Ok(Token {
-                        kind: if is_float {TokenKind::Float(number)} else {TokenKind::Int(number)},
+                        kind: TokenKind::Number(number),
                         row: first_char.row,
                         start: first_char.col,
                         end: end
