@@ -16,11 +16,6 @@ fn main() {
 
     let mut count = 0;
     for i in foo {
-        if i.is_err() {
-            println!("{:?}", i);
-            break;
-        }
-        //println!("{:?}", i);
         count += 1;
     }
 
