@@ -8,32 +8,7 @@ pub struct Token {
 
 #[derive(Debug)]
 pub enum TokenKind {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-    I,
-    J,
-    K,
-    L,
-    M,
-    N,
-    O,
-    P,
-    Q,
-    R,
-    S,
-    T,
-    U,
-    V,
-    W,
-    X,
-    Y,
-    Z,
+    Code(u8),
     Int(Vec<u8>),
     Float(Vec<u8>)
 }
