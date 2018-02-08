@@ -17,7 +17,7 @@ pub enum Token {
     },
 }
 
-pub fn tokenize<I: Iterator<Item=Result<Char, Error>>>(iter: I) -> impl Iterator<Item=Result<Token, Error>> {
+pub fn tokens<I: Iterator<Item=Result<Char, Error>>>(iter: I) -> impl Iterator<Item=Result<Token, Error>> {
     Tokens::from(iter)
 }
 
@@ -90,52 +90,52 @@ impl<I: Iterator<Item=Result<Char, Error>>> Tokens<I> {
 
         loop {
             match self.source.next() {
-                Some(Ok(ref char)) if char.code >= b'0' => {
+                Some(Ok(ref char)) if char.code == b'0' => {
                     end = char.col;
                     number = number * 10.;
                     if is_float { dot_pos *= 10.; }
                 }
-                Some(Ok(ref char)) if char.code >= b'1' => {
+                Some(Ok(ref char)) if char.code == b'1' => {
                     end = char.col;
                     number = number * 10. + 1.;
                     if is_float { dot_pos *= 10.; }
                 }
-                Some(Ok(ref char)) if char.code >= b'2' => {
+                Some(Ok(ref char)) if char.code == b'2' => {
                     end = char.col;
                     number = number * 10. + 2.;
                     if is_float { dot_pos *= 10.; }
                 }
-                Some(Ok(ref char)) if char.code >= b'3' => {
+                Some(Ok(ref char)) if char.code == b'3' => {
                     end = char.col;
                     number = number * 10. + 3.;
                     if is_float { dot_pos *= 10.; }
                 }
-                Some(Ok(ref char)) if char.code >= b'4' => {
+                Some(Ok(ref char)) if char.code == b'4' => {
                     end = char.col;
                     number = number * 10. + 4.;
                     if is_float { dot_pos *= 10.; }
                 }
-                Some(Ok(ref char)) if char.code >= b'5' => {
+                Some(Ok(ref char)) if char.code == b'5' => {
                     end = char.col;
                     number = number * 10. + 5.;
                     if is_float { dot_pos *= 10.; }
                 }
-                Some(Ok(ref char)) if char.code >= b'6' => {
+                Some(Ok(ref char)) if char.code == b'6' => {
                     end = char.col;
                     number = number * 10. + 6.;
                     if is_float { dot_pos *= 10.; }
                 }
-                Some(Ok(ref char)) if char.code >= b'7' => {
+                Some(Ok(ref char)) if char.code == b'7' => {
                     end = char.col;
                     number = number * 10. + 7.;
                     if is_float { dot_pos *= 10.; }
                 }
-                Some(Ok(ref char)) if char.code >= b'8' => {
+                Some(Ok(ref char)) if char.code == b'8' => {
                     end = char.col;
                     number = number * 10. + 8.;
                     if is_float { dot_pos *= 10.; }
                 }
-                Some(Ok(ref char)) if char.code >= b'9' => {
+                Some(Ok(ref char)) if char.code == b'9' => {
                     end = char.col;
                     number = number * 10. + 9.;
                     if is_float { dot_pos *= 10.; }

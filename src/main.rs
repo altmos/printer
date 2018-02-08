@@ -6,16 +6,20 @@ use std::fs::File;
 mod error;
 mod io;
 mod lexer;
+mod parser;
 
 fn main() {
     let f = File::open(std::env::args().nth(1).unwrap()).unwrap();
 
     let foo = io::buf_read(f);
 
-    let foo = lexer::tokenize(foo);
+    let foo = lexer::tokens(foo);
+
+    let foo = parser::words(foo);
 
     let mut count = 0;
     for i in foo {
+        println!("{:?}", i);
         count += 1;
     }
 
