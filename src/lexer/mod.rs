@@ -1,9 +1,21 @@
-mod token;
-
 use crate::io::Char;
 use crate::error::Error;
 
-use self::token::{Token, TokenKind};
+#[derive(Debug)]
+pub enum Token {
+    Letter {
+        value: char,
+        row: u32,
+        start: u16,
+        end: u16
+    },
+    Number {
+        value: f32,
+        row: u32,
+        start: u16,
+        end: u16
+    },
+}
 
 pub fn tokenize<I: Iterator<Item=Result<Char, Error>>>(iter: I) -> impl Iterator<Item=Result<Token, Error>> {
     Tokens::from(iter)
@@ -34,8 +46,8 @@ impl<I: Iterator<Item=Result<Char, Error>>> Iterator for Tokens<I> {
 
         match item {
             Some(Ok(ref char)) if char.code >= b'A' && char.code <= b'Z' => {
-                Some(Ok(Token {
-                    kind: TokenKind::Letter(char.code as char),
+                Some(Ok(Token::Letter {
+                    value: char.code as char,
                     row: char.row,
                     start: char.col,
                     end: char.col
@@ -63,19 +75,70 @@ impl<I: Iterator<Item=Result<Char, Error>>> Tokens<I> {
                 0.
             }
             b'+' | b'-' => 0.,
-            _ => map_digit_to_int(first_char.code) as f32
+            b'0' => 0.,
+            b'1' => 1.,
+            b'2' => 2.,
+            b'3' => 3.,
+            b'4' => 4.,
+            b'5' => 5.,
+            b'6' => 6.,
+            b'7' => 7.,
+            b'8' => 8.,
+            b'9' => 9.,
+            _ => unreachable!()
         };
 
         loop {
             match self.source.next() {
-                Some(Ok(ref char)) if (char.code >= b'0' && char.code <= b'9') => {
+                Some(Ok(ref char)) if char.code >= b'0' => {
                     end = char.col;
-                    number *= 10.;
-                    number += map_digit_to_int(char.code);
-
-                    if is_float {
-                        dot_pos *= 10.;
-                    }
+                    number = number * 10.;
+                    if is_float { dot_pos *= 10.; }
+                }
+                Some(Ok(ref char)) if char.code >= b'1' => {
+                    end = char.col;
+                    number = number * 10. + 1.;
+                    if is_float { dot_pos *= 10.; }
+                }
+                Some(Ok(ref char)) if char.code >= b'2' => {
+                    end = char.col;
+                    number = number * 10. + 2.;
+                    if is_float { dot_pos *= 10.; }
+                }
+                Some(Ok(ref char)) if char.code >= b'3' => {
+                    end = char.col;
+                    number = number * 10. + 3.;
+                    if is_float { dot_pos *= 10.; }
+                }
+                Some(Ok(ref char)) if char.code >= b'4' => {
+                    end = char.col;
+                    number = number * 10. + 4.;
+                    if is_float { dot_pos *= 10.; }
+                }
+                Some(Ok(ref char)) if char.code >= b'5' => {
+                    end = char.col;
+                    number = number * 10. + 5.;
+                    if is_float { dot_pos *= 10.; }
+                }
+                Some(Ok(ref char)) if char.code >= b'6' => {
+                    end = char.col;
+                    number = number * 10. + 6.;
+                    if is_float { dot_pos *= 10.; }
+                }
+                Some(Ok(ref char)) if char.code >= b'7' => {
+                    end = char.col;
+                    number = number * 10. + 7.;
+                    if is_float { dot_pos *= 10.; }
+                }
+                Some(Ok(ref char)) if char.code >= b'8' => {
+                    end = char.col;
+                    number = number * 10. + 8.;
+                    if is_float { dot_pos *= 10.; }
+                }
+                Some(Ok(ref char)) if char.code >= b'9' => {
+                    end = char.col;
+                    number = number * 10. + 9.;
+                    if is_float { dot_pos *= 10.; }
                 }
                 Some(Ok(Char { code: b'.', row: _, col })) if !is_float => {
                     end = col;
@@ -89,8 +152,8 @@ impl<I: Iterator<Item=Result<Char, Error>>> Tokens<I> {
                         number *= -1.;
                     }
 
-                    break Some(Ok(Token {
-                        kind: TokenKind::Number(number),
+                    break Some(Ok(Token::Number {
+                        value: number,
                         row: first_char.row,
                         start: first_char.col,
                         end: end
@@ -99,20 +162,4 @@ impl<I: Iterator<Item=Result<Char, Error>>> Tokens<I> {
             }
         }
     }
-}
-
-fn map_digit_to_int(digit: u8) -> f32 {
-    (match digit {
-        b'0' => 0.,
-        b'1' => 1.,
-        b'2' => 2.,
-        b'3' => 3.,
-        b'4' => 4.,
-        b'5' => 5.,
-        b'6' => 6.,
-        b'7' => 7.,
-        b'8' => 8.,
-        b'9' => 9.,
-        _ => unreachable!()
-    }) as f32
 }
