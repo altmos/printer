@@ -7,7 +7,10 @@ pub struct Char {
     pub col: u16,
 }
 
-pub struct Chars<I> where I: Iterator<Item=Result<u8, Error>> {
+pub struct Chars<I>
+where
+    I: Iterator<Item = Result<u8, Error>>,
+{
     source: I,
     row: u32,
     col: u16,
@@ -15,7 +18,7 @@ pub struct Chars<I> where I: Iterator<Item=Result<u8, Error>> {
     multi_comment: bool,
 }
 
-impl<I: Iterator<Item=Result<u8, Error>>> From<I> for Chars<I> {
+impl<I: Iterator<Item = Result<u8, Error>>> From<I> for Chars<I> {
     fn from(source: I) -> Self {
         Self {
             source: source,
@@ -27,7 +30,7 @@ impl<I: Iterator<Item=Result<u8, Error>>> From<I> for Chars<I> {
     }
 }
 
-impl<I: Iterator<Item=Result<u8, Error>>> Iterator for Chars<I> {
+impl<I: Iterator<Item = Result<u8, Error>>> Iterator for Chars<I> {
     type Item = Result<Char, Error>;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -53,7 +56,6 @@ impl<I: Iterator<Item=Result<u8, Error>>> Iterator for Chars<I> {
                     self.multi_comment = false;
                 }
                 Some(Ok(b';')) if !self.single_comment && !self.multi_comment => {
-
                     self.single_comment = true;
                 }
                 Some(Ok(code)) => {
@@ -64,11 +66,11 @@ impl<I: Iterator<Item=Result<u8, Error>>> Iterator for Chars<I> {
                             code: code,
                             row: self.row,
                             col: self.col,
-                        }))
+                        }));
                     }
                 }
                 Some(Err(err)) => break Some(Err(err)),
-                None => break None
+                None => break None,
             };
         }
     }
