@@ -5,7 +5,6 @@ use std::fs::File;
 
 mod error;
 mod io;
-mod lexer;
 mod parser;
 
 fn main() {
@@ -13,13 +12,10 @@ fn main() {
 
     let foo = io::buf_read(f);
 
-    let foo = lexer::tokens(foo);
-
-    let foo = parser::words(foo);
+    let foo = parser::tokens(foo);
 
     let mut count = 0;
     for i in foo {
-        println!("{:?}", i);
         count += 1;
     }
 

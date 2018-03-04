@@ -1,6 +1,6 @@
 use std::io::Error as IOError;
 use crate::io::Char;
-use crate::lexer::Token;
+use crate::parser::Token;
 
 #[derive(Debug)]
 pub enum Error {
