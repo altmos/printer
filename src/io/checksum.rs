@@ -1,9 +1,6 @@
 use crate::error::Error;
 
-pub struct Checksum<I>
-where
-    I: Iterator<Item = Result<u8, Error>>,
-{
+pub struct Checksum<I: Iterator<Item = Result<u8, Error>>> {
     source: I,
     row: u32,
     sum: u8,

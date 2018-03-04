@@ -7,10 +7,7 @@ pub struct Char {
     pub col: u16,
 }
 
-pub struct Chars<I>
-where
-    I: Iterator<Item = Result<u8, Error>>,
-{
+pub struct Chars<I: Iterator<Item = Result<u8, Error>>> {
     source: I,
     row: u32,
     col: u16,
